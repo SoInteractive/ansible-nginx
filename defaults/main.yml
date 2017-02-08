@@ -2,6 +2,20 @@
 nginx_conf_dir: /etc/nginx
 nginx_data_dir: /var/www
 
+nginx_events_params:
+  - worker_connections: 768
+
+nginx_http_params:
+  - sendfile "on"
+  - tcp_nopush "on"
+  - tcp_nodelay "on"
+  - keepalive_timeout "65"
+  - access_log "{{nginx_log_dir}}/access.log"
+  - "error_log {{nginx_log_dir}}/error.log error"
+  - server_tokens off
+  - types_hash_max_size 2048
+
+
 nginx_remove_configs: []
 
 nginx_security_headers:
@@ -51,23 +65,29 @@ nginx_remove_sites: []
 nginx_sites:
   default:
     upstreams:
-      integration:
-        - server 0.0.0.0:10095
+      app:
+        - server 0.0.0.0:8080;
     servers:
       http:
         - listen 80 default_server;
         - listen [::]:80 default_server;
-        - server_name www.devsmeat.pl devsmeat.pl;
+        - server_name www.example.com example.com;
         - root {{ nginx_letsencrypt_data_dir }};
         - include snippets/letsencrypt.conf;
         - location / {
-          return 301 https://devsmeat.pl$request_uri;
+          return 301 https://example.com$request_uri;
           }
       https:
-        - server_name _
-        - root /usr/share/nginx/html
-        - index index.html
+        - listen 443 ssl http2 default_server;
+        - listen [::]:443 ssl http2 default_server;
+        - server_name www.example.com example.com;
+        - root {{ nginx_letsencrypt_data_dir }};
+        - ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;
+        - ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+        - include snippets/ssl.conf;
+        - include snippets/headers.conf;
+        - index index.html index.php;
         - location / {
-          try_files $uri $uri/ /index.html;
+          try_files $uri $uri/ =404;
           }
 

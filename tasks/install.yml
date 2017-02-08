@@ -29,20 +29,6 @@
     group: "{{nginx_group}}"
     mode: 0755
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 - name: Install SELinux packages
   package:
     name: "{{ item }}"
