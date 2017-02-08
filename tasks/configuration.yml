@@ -8,6 +8,7 @@
 
 - name: Create {{ nginx_dh_bits }}bit Diffie-Hellman
   command: "openssl dhparam -out {{ nginx_conf_dir }}/dhparam.pem {{ nginx_dh_bits }}"
+  args:
     creates: "{{ nginx_conf_dir }}/dhparam.pem" 
   when: nginx_ssl_enable
 
