@@ -19,7 +19,3 @@ http {
   include {{ nginx_conf_dir }}/conf.d/*.conf;
   include {{ nginx_conf_dir }}/sites-enabled/*;
 }
-
-{% if nginx_daemon_mode == "off" %}
-daemon off;
-{% endif %}
