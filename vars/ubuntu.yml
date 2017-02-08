@@ -1,0 +1,7 @@
+---
+nginx_user: www-data
+nginx_group: "{{ nginx_user }}"
+
+selinux_packages:
+  - python-selinux
+  - python-semanage

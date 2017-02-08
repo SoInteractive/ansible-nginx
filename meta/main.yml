@@ -1,0 +1,23 @@
+---
+galaxy_info:
+  author: Pawel Krupa
+  description: Nginx installation and config
+  company: Sointeractive
+  min_ansible_version: 2.0
+  platforms:
+   - name: EL
+     versions:
+       - 7
+   - name: Ubuntu
+     versions:
+       - 14.04
+       - 16.04
+  galaxy_tags:
+   - nginx
+   - letsencrypt
+   - ssl
+   - proxy
+
+#dependencies:
+#  - { role: username.common }
+

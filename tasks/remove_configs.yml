@@ -1,0 +1,31 @@
+---
+- name: Disable the default site
+  file:
+    path: "{{nginx_conf_dir}}/sites-enabled/default"
+    state: absent
+  notify:
+  - reload nginx
+
+#- name: Remove the default configuration
+#  file:
+#    path: "{{nginx_conf_dir}}/conf.d/default.conf"
+#    state: absent
+#  notify:
+#  - reload nginx
+
+- name: Unlink unwanted sites
+  file:
+    path: "{{nginx_conf_dir}}/sites-enabled/{{ item }}.conf"
+    state: absent
+  with_items:
+    - "{{ nginx_remove_sites }}"
+  notify:
+   - reload nginx
+
+- name: Remove unwanted conf
+  file:
+    path: "{{nginx_conf_dir}}/conf.d/{{ item[1] }}.conf"
+    state: absent
+  with_items: "{{ nginx_remove_configs }}"
+  notify:
+   - reload nginx

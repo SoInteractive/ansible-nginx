@@ -1,0 +1,38 @@
+---
+- name: Create {{ nginx_dh_bits }}bit Diffie-Hellman
+  command: "openssl dhparam -out {{ nginx_conf_dir }}/dhparam.pem {{ nginx_dh_bits }}"
+    creates: "{{ nginx_conf_dir }}/dhparam.pem" 
+  when: nginx_ssl_enable
+
+- name: Letsencrypt snippet
+  template:
+    src: letsencrypt.conf.j2
+    dest: "{{ nginx_conf_dir }}/snippets/letsencrypt.conf"
+  when: nginx_ssl_enable
+
+- name: Create snippets
+  template:
+    src: config.conf.j2
+    dest: "{{ nginx_conf_dir }}/snippets/{{ item.key }}.conf"
+  with_dict: "{{ nginx_snippets }}"
+  notify:
+    - reload nginx
+
+- name: Create sites configurations
+  template:
+    src: "{{ item.value.template | default('site.conf.j2') }}"
+    dest: "{{ nginx_conf_dir }}/sites-available/{{ item.key }}"
+  with_dict: "{{ nginx_sites }}"
+  when: item.key not in nginx_remove_sites
+  notify:
+    - reload nginx
+
+- name: Create links for sites-enabled
+  file:
+    state: link
+    src: "{{ nginx_conf_dir }}/sites-available/{{ item.key }}"
+    dest: "{{ nginx_conf_dir }}/sites-enabled/{{ item.key }}"
+  with_dict: "{{ nginx_sites }}"
+  when: item.key not in nginx_remove_sites
+  notify:
+    - reload nginx
