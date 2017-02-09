@@ -6,6 +6,12 @@
   notify:
    - restart nginx
 
+- name: Remove old Diffie-Hellman params
+  file:
+    path: "{{ nginx_conf_dir }}/dhparam.pem"
+    state: absent
+  when: nginx_dh_remove_old
+
 - name: Create {{ nginx_dh_bits }}bit Diffie-Hellman
   command: "openssl dhparam -out {{ nginx_conf_dir }}/dhparam.pem {{ nginx_dh_bits }}"
   args:
