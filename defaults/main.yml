@@ -32,7 +32,8 @@ nginx_proxy_headers:
 
 nginx_ssl_enable: True
 nginx_dh_remove_old: False
-nginx_dh_bits: 4096
+nginx_dh_bits: 2048
+#nginx_dh_bits: 4096
 nginx_letsencrypt_data_dir: "{{ nginx_data_dir }}/letsencrypt"
 
 nginx_snippets:
@@ -60,6 +61,7 @@ nginx_snippets:
     - add_header Strict-Transport-Security "max-age=31536000; includeSubDomains"
   firewall:
     - allow 91.227.212.0/22
+    - allow 192.168.14.0/23
     - deny all
 
 nginx_remove_sites: []
