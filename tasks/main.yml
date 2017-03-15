@@ -15,3 +15,6 @@
 - include: remove_configs.yml
 
 - include: configuration.yml
+
+- include: metrics.yml
+  when: nginx_metrics

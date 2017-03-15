@@ -2,6 +2,8 @@
 nginx_conf_dir: /etc/nginx
 nginx_data_dir: /var/www
 
+nginx_metrics: false
+
 nginx_events_params:
   - worker_connections 768
 
