@@ -10,8 +10,8 @@ galaxy_info:
        - 7
    - name: Ubuntu
      versions:
-       - 14.04
-       - 16.04
+       - trusty
+       - xenial
   galaxy_tags:
    - nginx
    - letsencrypt
