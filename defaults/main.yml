@@ -66,6 +66,9 @@ nginx_snippets:
     - allow 192.168.14.0/23
     - deny all
 
+nginx_basic_auth_user: ""
+nginx_basic_auth_pass: ""
+
 nginx_remove_sites: []
 nginx_sites:
   default:

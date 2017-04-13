@@ -10,6 +10,12 @@
     name: nginx
     state: present
 
+- name: Install passlib library
+  package:
+    name: python-passlib
+    state: present
+  when: nginx_basic_auth_user != "" and nginx_basic_auth_pass != ""
+
 - name: Create configuration directories
   file:
     path: "{{ nginx_conf_dir }}/{{ item }}"
