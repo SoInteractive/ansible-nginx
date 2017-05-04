@@ -4,8 +4,7 @@
     src: nginx.conf.j2
     dest: "{{ nginx_conf_dir }}/nginx.conf"
     backup: yes
-  notify:
-   - restart nginx
+  notify: restart nginx
 
 - name: Remove old Diffie-Hellman params
   file:
@@ -14,7 +13,7 @@
   when: nginx_dh_remove_old
 
 - name: Create {{ nginx_dh_bits }}bit Diffie-Hellman
-  command: "openssl dhparam -out {{ nginx_conf_dir }}/dhparam.pem {{ nginx_dh_bits }}"
+  command: "openssl dhparam {{ '-dsaparam' if nginx_dh_bits > 2048 }} -out {{ nginx_conf_dir }}/dhparam.pem {{ nginx_dh_bits }}"
   args:
     creates: "{{ nginx_conf_dir }}/dhparam.pem" 
   when: nginx_ssl_enable
@@ -30,8 +29,7 @@
     src: config.conf.j2
     dest: "{{ nginx_conf_dir }}/snippets/{{ item.key }}.conf"
   with_dict: "{{ nginx_snippets }}"
-  notify:
-    - reload nginx
+  notify: reload nginx
 
 - name: Create sites configurations
   template:
@@ -40,8 +38,7 @@
     backup: yes
   with_dict: "{{ nginx_sites }}"
   when: item.key not in nginx_remove_sites
-  notify:
-    - reload nginx
+  notify: reload nginx
 
 - name: Create links for sites-enabled
   file:
@@ -50,8 +47,7 @@
     dest: "{{ nginx_conf_dir }}/sites-enabled/{{ item.key }}"
   with_dict: "{{ nginx_sites }}"
   when: item.key not in nginx_remove_sites
-  notify:
-    - reload nginx
+  notify: reload nginx
 
 - name: Create password file
   htpasswd:
