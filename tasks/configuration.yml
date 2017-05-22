@@ -13,7 +13,7 @@
   when: nginx_dh_remove_old
 
 - name: Create {{ nginx_dh_bits }}bit Diffie-Hellman
-  command: "openssl dhparam {{ '-dsaparam' if nginx_dh_bits > 2048 }} -out {{ nginx_conf_dir }}/dhparam.pem {{ nginx_dh_bits }}"
+  command: "openssl dhparam {{ '-dsaparam' if nginx_dh_bits > 2048 else '' }} -out {{ nginx_conf_dir }}/dhparam.pem {{ nginx_dh_bits }}"
   args:
     creates: "{{ nginx_conf_dir }}/dhparam.pem" 
   when: nginx_ssl_enable
@@ -37,7 +37,6 @@
     dest: "{{ nginx_conf_dir }}/sites-available/{{ item.key }}"
     backup: yes
   with_dict: "{{ nginx_sites }}"
-  when: item.key not in nginx_remove_sites
   notify: reload nginx
 
 - name: Create links for sites-enabled
