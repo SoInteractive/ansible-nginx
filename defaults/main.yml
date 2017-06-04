@@ -70,7 +70,7 @@ nginx_basic_auth_pass: ""
 
 nginx_remove_sites: []
 nginx_sites:
-  default:
+  example:
     upstreams:
       app:
         - server 0.0.0.0:8080;
