@@ -15,7 +15,7 @@
 - name: Create {{ nginx_dh_bits }}bit Diffie-Hellman
   command: "openssl dhparam {{ '-dsaparam' if nginx_dh_bits > 2048 else '' }} -out {{ nginx_conf_dir }}/dhparam.pem {{ nginx_dh_bits }}"
   args:
-    creates: "{{ nginx_conf_dir }}/dhparam.pem" 
+    creates: "{{ nginx_conf_dir }}/dhparam.pem"
   when: nginx_ssl_enable
 
 - name: Letsencrypt snippet

@@ -4,7 +4,7 @@
     name: epel-release
     state: present
   when: ansible_pkg_mgr == "yum"
-  
+
 - name: Install nginx
   package:
     name: nginx
