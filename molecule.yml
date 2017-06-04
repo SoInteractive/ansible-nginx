@@ -1,0 +1,19 @@
+---
+ansible:
+  playbook: tests/playbook.yml
+driver:
+  name: docker
+verifier:
+  name: testinfra
+docker:
+  containers:
+    - name: nginx-ubuntu
+      image: docker
+      image_version: xenial
+      ansible_groups:
+        - group1
+    - name: nginx-centos
+      image: centos
+      image_version: 7
+      ansible_groups:
+        - group2

@@ -3,6 +3,7 @@ galaxy_info:
   author: Pawel Krupa
   description: Nginx installation and config
   company: Sointeractive
+  license: MIT
   min_ansible_version: 2.0
   platforms:
    - name: EL
@@ -14,9 +15,9 @@ galaxy_info:
        - xenial
   galaxy_tags:
    - nginx
-   - letsencrypt
    - ssl
    - proxy
+   - letsencrypt
 
 #dependencies:
 #  - { role: username.common }

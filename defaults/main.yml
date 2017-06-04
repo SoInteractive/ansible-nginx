@@ -17,7 +17,6 @@ nginx_http_params:
   - server_tokens off
   - types_hash_max_size 2048
 
-
 nginx_remove_configs: []
 
 nginx_security_headers:
