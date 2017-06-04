@@ -7,13 +7,13 @@ verifier:
   name: testinfra
 docker:
   containers:
-    - name: nginx-ubuntu
+    - name: nginx-trusty
+      image: ubuntu
+      image_version: trusty
+    - name: nginx-xenial
       image: ubuntu
       image_version: xenial
-      ansible_groups:
-        - group1
     - name: nginx-centos
-      image: centos
-      image_version: 7
-      ansible_groups:
-        - group2
+      image: centos/systemd
+      image_version: latest
+      privileged: true
