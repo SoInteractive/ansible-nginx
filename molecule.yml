@@ -8,7 +8,7 @@ verifier:
 docker:
   containers:
     - name: nginx-ubuntu
-      image: docker
+      image: ubuntu
       image_version: xenial
       ansible_groups:
         - group1
