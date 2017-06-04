@@ -2,3 +2,5 @@
 - hosts: all
   roles:
     - nginx
+  vars:
+    nginx_dh_bits: 1024
