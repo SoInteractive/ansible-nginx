@@ -10,6 +10,12 @@
     name: nginx
     state: present
 
+- name: Install openssl
+  package:
+    name: openssl
+    state: present
+  when: nginx_ssl_enable
+
 - name: Install passlib library
   package:
     name: python-passlib

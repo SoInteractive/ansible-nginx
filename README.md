@@ -28,3 +28,8 @@ execution to remove previous Diffie-Hellman parameters
 
 Have a look at the [defaults/main.yml](defaults/main.yml) for role variables
 that can be overridden.
+
+TODO
+----
+
+- CentOS 7 support

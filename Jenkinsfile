@@ -1,5 +1,12 @@
 #!groovy
 
+/* Only keep the 10 most recent builds. */
+def projectProperties = [
+    [$class: 'BuildDiscarderProperty',strategy: [$class: 'LogRotator', numToKeepStr: '5']],
+]
+
+properties(projectProperties)
+
 /* Declarative pipeline */
 pipeline {
   agent {
