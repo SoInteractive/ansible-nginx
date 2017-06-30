@@ -38,7 +38,8 @@ def test_files(File):
 
 # def test_service(Service):
 #     present = [
-#         "nginx"
+#         "nginx",
+#         "nginx_exporter"
 #     ]
 #     if present:
 #         for service in present:
