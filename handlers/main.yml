@@ -1,18 +1,18 @@
 ---
-- name: restart nginx
-  service:
-    name: nginx
-    state: restarted
-
-- name: reload nginx
-  service:
-    name: nginx
-    state: reloaded
-
 - name: reload systemd
   command: systemctl daemon-reload
 
 - name: restart metrics service
   service:
     name: nginx_exporter
+    state: restarted
+
+- name: check config
+  command: "nginx -t -c {{ nginx_conf_dir }}/nginx.conf"
+  notify: restart nginx
+  register: configchange
+
+- name: restart nginx
+  service:
+    name: nginx
     state: restarted

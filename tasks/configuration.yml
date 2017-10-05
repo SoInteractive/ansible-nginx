@@ -4,7 +4,7 @@
     src: nginx.conf.j2
     dest: "{{ nginx_conf_dir }}/nginx.conf"
     backup: yes
-  notify: restart nginx
+  notify: check config
 
 - name: Remove old Diffie-Hellman params
   file:
@@ -29,7 +29,7 @@
     src: config.conf.j2
     dest: "{{ nginx_conf_dir }}/snippets/{{ item.key }}.conf"
   with_dict: "{{ nginx_snippets }}"
-  notify: reload nginx
+  notify: check config
 
 - name: Create sites configurations
   template:
@@ -37,8 +37,6 @@
     dest: "{{ nginx_conf_dir }}/sites-available/{{ item.key }}"
     backup: yes
   with_dict: "{{ nginx_sites }}"
-  register: confgen
-  notify: reload nginx
 
 - name: Create links for sites-enabled
   file:
@@ -47,7 +45,7 @@
     dest: "{{ nginx_conf_dir }}/sites-enabled/{{ item.key }}"
   with_dict: "{{ nginx_sites }}"
   when: item.key not in nginx_remove_sites
-  notify: reload nginx
+  notify: check config
 
 - name: Create password file
   htpasswd:
@@ -56,9 +54,3 @@
     password: "{{ nginx_basic_auth_pass }}"
     state: present
   when: nginx_basic_auth_pass != "" and nginx_basic_auth_user != ""
-
-- name: Check if config files are ok
-  command: "nginx -t -c {{ nginx_conf_dir }}/nginx.conf"
-  changed_when: false
-  when: confgen.changed
-  tags: skip_ansible_lint

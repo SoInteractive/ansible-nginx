@@ -25,4 +25,4 @@
   when: nginx_metrics
 
 - include: tests.yml
-  when: confgen.changed
+  when: configchange is defined
