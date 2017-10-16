@@ -23,3 +23,8 @@
 
 - include: metrics.yml
   when: nginx_metrics
+
+- name: Check if nginx is serving metrics
+  uri:
+    url: http://localhost:{{ nginx_metrics_port }}/nginx_status
+  when: nginx_metrics
