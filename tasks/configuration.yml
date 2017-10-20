@@ -44,7 +44,7 @@
   - headers.conf
   - proxy.conf
   - errors.conf
-  notify: reload nginx
+  notify: restart nginx
 
 - name: Create sites configurations
   template:
@@ -53,7 +53,7 @@
     backup: yes
   with_dict: "{{ nginx_sites }}"
   register: confgen
-  notify: reload nginx
+  notify: restart nginx
 
 - name: Create links for sites-enabled
   file:
@@ -62,7 +62,7 @@
     dest: "{{ nginx_conf_dir }}/sites-enabled/{{ item.key }}"
   with_dict: "{{ nginx_sites }}"
   when: item.key not in nginx_remove_sites
-  notify: reload nginx
+  notify: restart nginx
 
 - name: Create password file
   htpasswd:
