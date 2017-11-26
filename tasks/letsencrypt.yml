@@ -42,6 +42,15 @@
     path: "/etc/letsencrypt/live/{{ sites[0] }}/cert.pem"
   register: certificate_obtained
 
+- name: Add renewal to crontab
+  cron:
+    name: letsencrypt
+    cron_file: /etc/crontab
+    user: root
+    minute: 21
+    hour: 1
+    job: "certbot renew --webroot -w /var/www/letsencrypt --text >> /var/log/letsencrypt/renewal.log --post-hook 'systemctl restart nginx'"
+
 - block:
   - name: Stop nginx
     service:
@@ -54,18 +63,7 @@
       creates: "/etc/letsencrypt/live/{{ item }}/cert.pem"
     with_items: "{{ sites }}"
     when: ansible_virtualization_type != "docker" # sorry no support for nginx and certbot in docker
+    notify: check and start nginx
 
-  - name: Start nginx
-    service:
-      name: nginx
-      state: started
+  - meta: flush_handlers
   when: not certificate_obtained.stat.exists
-
-- name: Add renewal to crontab
-  cron:
-    name: letsencrypt
-    cron_file: /etc/crontab
-    user: root
-    minute: 21
-    hour: 1
-    job: "certbot renew --webroot -w /var/www/letsencrypt --text >> /var/log/letsencrypt/renewal.log --post-hook 'systemctl restart nginx'"
