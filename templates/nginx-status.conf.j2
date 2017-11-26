@@ -1,5 +1,5 @@
 server  {
-    listen 127.0.0.1:{{ nginx_metrics_port }};
+    listen 127.0.0.1:{{ nginx_status_port }};
     server_name localhost;
     location /nginx_status {
       stub_status on;

@@ -10,10 +10,7 @@
   tags:
     - always
 
-- name: Disable monitoring on trusty
-  set_fact:
-    nginx_metrics: false
-  when: ansible_service_mgr != "systemd"
+- include: preflight.yml
 
 - include: install.yml
 
@@ -24,7 +21,5 @@
 - include: metrics.yml
   when: nginx_metrics
 
-- name: Check if nginx is serving metrics
-  uri:
-    url: http://localhost:{{ nginx_metrics_port }}/nginx_status
-  when: nginx_metrics
+- include: letsencrypt.yml
+  when: nginx_letsencrypt_email != ""

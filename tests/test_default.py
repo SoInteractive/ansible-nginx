@@ -40,7 +40,8 @@ def test_files(host):
         "/var/www/custom_error_pages/nginx_502.html",
         "/var/www/custom_error_pages/nginx_503.html",
         "/var/www/custom_error_pages/nginx_504.html",
-        "/etc/nginx/dhparam.pem"
+        "/etc/nginx/dhparam.pem",
+        "/etc/nginx/sites-enabled/example"
     ]
     absent = [
         "/etc/nginx/sites-enabled/default"
@@ -70,7 +71,8 @@ def test_service(host):
 
 def test_packages(host):
     present = [
-        "nginx"
+        "nginx",
+        "certbot"
     ]
     if present:
         for package in present:

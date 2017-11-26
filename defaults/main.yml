@@ -3,7 +3,8 @@ nginx_conf_dir: /etc/nginx
 nginx_data_dir: /var/www
 
 nginx_metrics: True
-nginx_metrics_port: 8060
+# port on which nginx will server it status page
+nginx_status_port: 8060
 
 nginx_events_params:
   - worker_connections 768
@@ -20,13 +21,14 @@ nginx_http_params:
   - client_max_body_size 0
   - gzip off
 
+nginx_custom_errorfiles: True
 nginx_remove_configs: []
 
 nginx_ssl_enable: True
 nginx_dh_remove_old: False
 nginx_dh_bits: 2048
 #nginx_dh_bits: 4096
-nginx_letsencrypt_data_dir: "{{ nginx_data_dir }}/letsencrypt"
+nginx_letsencrypt_email: "" # Setting email enables letsencrypt automated certificates
 
 nginx_basic_auth_user: ""
 nginx_basic_auth_pass: ""
@@ -40,15 +42,22 @@ nginx_sites:
     server {
       listen 80 default_server;
       listen [::]:80 default_server;
-      server_name www.example.com example.com;
-      root {{ nginx_letsencrypt_data_dir }};
-      include snippets/letsencrypt.conf;
+      server_name {{ ansible_fqdn }};
+      include snippets/letsencrypt.conf; 
       include snippets/errors.conf;
-      location /app/ {
-        proxy_pass http://app;
-        include snippets/proxy.conf;
-      }
       location / {
         return 301 https://$server_name$request_uri;
       }
     }
+#    server {
+#      listen 443 ssl default_server;
+#      server_name {{ ansible_fqdn }};
+#      ssl_certificate /etc/letsencrypt/live/{{ ansible_fqdn }}/fullchain.pem;
+#      ssl_certificate_key /etc/letsencrypt/live/{{ ansible_fqdn }}/privkey.pem;
+#      include snippets/errors.conf;
+#      location /app/ {
+#        proxy_pass http://app;
+#        include snippets/proxy.conf;
+#      }
+#    }
+

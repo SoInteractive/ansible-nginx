@@ -13,13 +13,6 @@
     dest: /opt/nginx_exporter
     mode: 0755
 
-- name: create systemd nginx_exporter service file
-  template:
-    src: nginx_exporter.service.j2
-    dest: /etc/systemd/system/nginx_exporter.service
-  notify:
-  - restart metrics service
-
 - name: add metrics site
   template:
     src: nginx-status.conf.j2
@@ -27,7 +20,12 @@
   notify:
   - restart nginx
 
-- meta: flush_handlers
+- name: create systemd nginx_exporter service file
+  template:
+    src: nginx_exporter.service.j2
+    dest: /etc/systemd/system/nginx_exporter.service
+  notify:
+  - restart metrics service
 
 - name: ensure metrics service is enabled
   service:
