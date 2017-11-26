@@ -5,6 +5,3 @@ nginx_group: "{{ nginx_user }}"
 selinux_packages:
   - python-selinux
   - python-semanage
-
-certbot_package:
-  - certbot
