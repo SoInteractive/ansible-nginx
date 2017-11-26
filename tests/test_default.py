@@ -10,7 +10,8 @@ def test_directories(host):
         "/etc/nginx/sites-enabled",
         "/etc/nginx/sites-available",
         "/var/www/custom_error_pages",
-        "/var/log/nginx"
+        "/var/log/nginx",
+        "/var/www/letsencrypt"
     ]
     if present:
         for directory in present:
