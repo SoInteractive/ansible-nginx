@@ -6,11 +6,20 @@
     backup: yes
   notify: check and start nginx
 
-- name: Remove old Diffie-Hellman params
+- name: Check if dhparams need to be regenerated
+  shell: "openssl dhparam -inform PEM -in {{ nginx_conf_dir }}/dhparam.pem -text | head -n1 | grep 'DH Parameters: ({{ nginx_dh_bits }} bit)'"
+  register: dhstatus
+  ignore_errors: True
+  changed_when: False
+  tags: skip_ansible_lint
+
+- name: Remove old or invalid Diffie-Hellman params
   file:
     path: "{{ nginx_conf_dir }}/dhparam.pem"
     state: absent
-  when: nginx_dh_remove_old
+  when:
+  - dhstatus is defined
+  - dhstatus.rc != 0
 
 - name: Create {{ nginx_dh_bits }}bit Diffie-Hellman
   command: "openssl dhparam {{ '-dsaparam' if nginx_dh_bits > 2048 else '' }} -out {{ nginx_conf_dir }}/dhparam.pem {{ nginx_dh_bits }}"

@@ -25,7 +25,6 @@ nginx_custom_errorfiles: True
 nginx_remove_configs: []
 
 nginx_ssl_enable: True
-nginx_dh_remove_old: False
 nginx_dh_bits: 2048
 #nginx_dh_bits: 4096
 nginx_letsencrypt_email: "" # Setting email enables letsencrypt automated certificates
