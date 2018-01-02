@@ -10,7 +10,8 @@ def test_directories(host):
         "/etc/nginx/sites-enabled",
         "/etc/nginx/sites-available",
         "/var/www/custom_error_pages",
-        "/var/log/nginx"
+        "/var/log/nginx",
+        "/var/www/letsencrypt"
     ]
     if present:
         for directory in present:
@@ -40,7 +41,8 @@ def test_files(host):
         "/var/www/custom_error_pages/nginx_502.html",
         "/var/www/custom_error_pages/nginx_503.html",
         "/var/www/custom_error_pages/nginx_504.html",
-        "/etc/nginx/dhparam.pem"
+        "/etc/nginx/dhparam.pem",
+        "/etc/nginx/sites-enabled/example"
     ]
     absent = [
         "/etc/nginx/sites-enabled/default"
@@ -70,7 +72,8 @@ def test_service(host):
 
 def test_packages(host):
     present = [
-        "nginx"
+        "nginx",
+        "certbot"
     ]
     if present:
         for package in present:

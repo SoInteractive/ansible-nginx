@@ -1,0 +1,4 @@
+- name: Check if ssl is enabled when running letsencrypt
+  fail:
+    msg: "Please enable SSL option (nginx_ssl_enable) to run letsencrypt"
+  when: nginx_letsencrypt_email != "" and not nginx_ssl_enable

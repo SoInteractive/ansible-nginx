@@ -7,10 +7,22 @@
         state: present
       with_items:
         - net-tools
+
 - hosts: all
   roles:
     - ansible-nginx
+  post_tasks:
+    # Those tasks put placeholders in places where certbot would generate files
+    - name: Create letsencrypt directory structure
+      command: "mkdir -p /etc/letsencrypt/live/{{ ansible_fqdn }}"
+      args:
+        creates: "/etc/letsencrypt/live/{{ ansible_fqdn }}"
+      tags: skip_ansible_lint
+    - name: Create certificate file placeholder
+      command: "touch /etc/letsencrypt/live/{{ ansible_fqdn }}/cert.pem"
+      args:
+        creates: "/etc/letsencrypt/live/{{ ansible_fqdn }}/cert.pem"
   vars:
     nginx_dh_bits: 1024
-#    nginx_metrics: false
     molecule_ssl_validate: no
+    nginx_letsencrypt_email: "ansible@example.org"

@@ -2,7 +2,7 @@
 
 location ^~ /.well-known/acme-challenge/ {
     default_type "text/plain";
-    root {{ nginx_letsencrypt_data_dir }};
+    root /var/www/letsencrypt;
 }
  
 # Hide /acme-challenge subdirectory and return 404 on all requests.

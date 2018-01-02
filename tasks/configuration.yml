@@ -4,13 +4,22 @@
     src: nginx.conf.j2
     dest: "{{ nginx_conf_dir }}/nginx.conf"
     backup: yes
-  notify: restart nginx
+  notify: check and start nginx
 
-- name: Remove old Diffie-Hellman params
+- name: Check if dhparams need to be regenerated
+  shell: "openssl dhparam -inform PEM -in {{ nginx_conf_dir }}/dhparam.pem -text | head -n1 | grep 'DH Parameters: ({{ nginx_dh_bits }} bit)'"
+  register: dhstatus
+  ignore_errors: True
+  changed_when: False
+  tags: skip_ansible_lint
+
+- name: Remove old or invalid Diffie-Hellman params
   file:
     path: "{{ nginx_conf_dir }}/dhparam.pem"
     state: absent
-  when: nginx_dh_remove_old
+  when:
+  - dhstatus is defined
+  - dhstatus.rc != 0
 
 - name: Create {{ nginx_dh_bits }}bit Diffie-Hellman
   command: "openssl dhparam {{ '-dsaparam' if nginx_dh_bits > 2048 else '' }} -out {{ nginx_conf_dir }}/dhparam.pem {{ nginx_dh_bits }}"
@@ -18,22 +27,18 @@
     creates: "{{ nginx_conf_dir }}/dhparam.pem"
   when: nginx_ssl_enable
 
-- name: Letsencrypt snippet
-  template:
-    src: snippets/letsencrypt.conf.j2
-    dest: "{{ nginx_conf_dir }}/snippets/letsencrypt.conf"
-  when: nginx_ssl_enable
-
 - name: Create errorfiles dir
   file:
     path: "{{ nginx_data_dir }}/custom_error_pages"
     state: directory
+  when: nginx_custom_errorfiles
 
 - name: Copy errorfiles
   template:
     src: "error_codes.j2"
     dest: "{{ nginx_data_dir }}/custom_error_pages/nginx_{{ item.code }}.html"
   with_items: "{{ nginx_errors }}"
+  when: nginx_custom_errorfiles
 
 - name: Create snippets
   template:
@@ -44,7 +49,7 @@
   - headers.conf
   - proxy.conf
   - errors.conf
-  notify: restart nginx
+  notify: check and start nginx
 
 - name: Create sites configurations
   template:
@@ -52,8 +57,7 @@
     dest: "{{ nginx_conf_dir }}/sites-available/{{ item.key }}"
     backup: yes
   with_dict: "{{ nginx_sites }}"
-  register: confgen
-  notify: restart nginx
+  notify: check and start nginx
 
 - name: Create links for sites-enabled
   file:
@@ -62,7 +66,7 @@
     dest: "{{ nginx_conf_dir }}/sites-enabled/{{ item.key }}"
   with_dict: "{{ nginx_sites }}"
   when: item.key not in nginx_remove_sites
-  notify: restart nginx
+  notify: check and start nginx
 
 - name: Create password file
   htpasswd:
@@ -71,9 +75,3 @@
     password: "{{ nginx_basic_auth_pass }}"
     state: present
   when: nginx_basic_auth_pass != "" and nginx_basic_auth_user != ""
-
-- name: Check if config files are ok
-  command: "nginx -t -c {{ nginx_conf_dir }}/nginx.conf"
-  changed_when: false
-  when: confgen.changed
-  tags: skip_ansible_lint

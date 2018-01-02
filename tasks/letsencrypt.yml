@@ -1,0 +1,69 @@
+- block:
+  - name: Install software-properties-common
+    apt:
+      name: software-properties-common
+      state: present
+  - name: Add certbot PPA
+    apt_repository:
+      repo: 'ppa:certbot/certbot'
+      update_cache: yes
+  when: ansible_distribution == "Ubuntu"
+
+- name: Install certbot
+  package:
+    name: certbot
+    state: present
+
+- name: Create webroot
+  file:
+    path: /var/www/letsencrypt
+    state: directory
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_group }}"
+
+- name: Letsencrypt snippet
+  template:
+    src: snippets/letsencrypt.conf.j2
+    dest: "{{ nginx_conf_dir }}/snippets/letsencrypt.conf"
+
+- name: Search for domains in nginx configuration
+  set_fact:
+    sites_helper: "{{ item.value | regex_findall('server_name .*;') | replace('server_name ','') | replace(';','') }}"
+  register: sites_all
+  with_dict: "{{ nginx_sites }}"
+
+- name: Compose list of nginx sites
+  set_fact:
+    sites: "{{ sites_all.results | map(attribute='ansible_facts.sites_helper') | sum(start=[]) | list }}"
+
+# FIXME should check for any cert from `sites` list
+- name: Check if letsencrypt certificate exist
+  stat:
+    path: "/etc/letsencrypt/live/{{ sites[0] }}/cert.pem"
+  register: certificate_obtained
+
+- name: Add renewal to crontab
+  cron:
+    name: letsencrypt
+    cron_file: /etc/crontab
+    user: root
+    minute: 21
+    hour: 1
+    job: "certbot renew --webroot -w /var/www/letsencrypt --text >> /var/log/letsencrypt/renewal.log --post-hook 'systemctl restart nginx'"
+
+- block:
+  - name: Stop nginx
+    service:
+      name: nginx
+      state: stopped
+
+  - name: Generate certificates
+    command: "certbot certonly --standalone -n --agree-tos -m {{ nginx_letsencrypt_email }} {{ '-d ' + item }}"
+    args:
+      creates: "/etc/letsencrypt/live/{{ item }}/cert.pem"
+    with_items: "{{ sites }}"
+    when: ansible_virtualization_type != "docker" # sorry no support for nginx and certbot in docker
+    notify: check and start nginx
+
+  - meta: flush_handlers
+  when: not certificate_obtained.stat.exists

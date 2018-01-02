@@ -1,4 +1,9 @@
 ---
+- name: check and start nginx
+  command: "nginx -t -c {{ nginx_conf_dir }}/nginx.conf"
+  changed_when: false
+  notify: restart nginx
+
 - name: restart nginx
   systemd:
     name: nginx
@@ -9,3 +14,8 @@
     daemon_reload: yes
     name: nginx_exporter
     state: restarted
+  notify: check if nginx is serving metrics
+
+- name: check if nginx is serving metrics
+  uri:
+    url: http://localhost:{{ nginx_status_port }}/nginx_status
