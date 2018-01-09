@@ -19,6 +19,13 @@ Requirements
 
 When using metrics exporter, golang should be installed on deployer host. Also systemd is currently needed.
 
+Let's encrypt
+-------------
+
+This role can automatically generate letencrypt certificates. To do this you need an email previously used for some let's encrypt certificate and set some variables:
+- `nginx_letsencrypt_email`
+- use `server_name` directive in `nginx_sites` for sites which need certificate.
+
 Examples
 --------
 
