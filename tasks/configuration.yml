@@ -74,4 +74,5 @@
     name: "{{ nginx_basic_auth_user }}"
     password: "{{ nginx_basic_auth_pass }}"
     state: present
+    group: "{{ nginx_group }}"
   when: nginx_basic_auth_pass != "" and nginx_basic_auth_user != ""
