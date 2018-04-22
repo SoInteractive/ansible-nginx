@@ -9,6 +9,10 @@ Ansible Role: nginx
 
 This role will install and configure nginx and its sites. It supports SSL/TLS termination and letsencrypt autorenewal directory.
 
+# :warning: IMPORTANT NOTICE
+
+THIS PROJECT IS ABANDONED. WE DO NOT ACCEPT ANY NEW ISSUES AND/OR PULL REQUESTS.
+
 Disclaimer
 ----------
 
