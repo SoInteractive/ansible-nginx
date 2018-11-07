@@ -1,5 +1,5 @@
 ---
-- name: Download nginx_exporter from github and compile it locally
+- name: download nginx_exporter from github and compile it locally
   become: no
   shell: "export GOPATH=/tmp/nginx_exporter; go get github.com/nginxinc/nginx-prometheus-exporter"
   args:
@@ -22,7 +22,7 @@
     chdir: /tmp/nginx_exporter/src/github.com/nginxinc/nginx-prometheus-exporter/
   run_once: yes
   delegate_to: localhost
-  when: result.stat.exists==False 
+  when: result.stat.exists == False
 
 - name: install prometheus exporter
   copy:
