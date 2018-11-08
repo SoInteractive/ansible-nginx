@@ -1,32 +1,24 @@
 ---
-- name: download nginx_exporter from github and compile it locally
+- name: get nginx exporter
   become: no
-  shell: "export GOPATH=/tmp/nginx_exporter; go get github.com/nginxinc/nginx-prometheus-exporter"
-  args:
-    creates: /tmp/nginx_exporter
+  get_url:
+    url: https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v0.1.0/nginx-prometheus-exporter-0.1.0-linux-amd64.tar.gz
+    dest: /tmp/nginx_exporter.tar.gz
+    mode: 0775
   run_once: yes
   delegate_to: localhost
 
-- name: check if build_exporter has been build
+- name: extract nginx_exporter
   become: no
-  stat:
-    path: /tmp/nginx_exporter/src/github.com/nginxinc/nginx-prometheus-exporter/nginx-prometheus-exporter
-  register: result
+  unarchive:
+    src: /tmp/nginx_exporter.tar.gz
+    dest: /tmp
   run_once: yes
   delegate_to: localhost
 
-- name: build nginx_exporter
-  become: no
-  shell: "export GOPATH=/tmp/nginx_exporter; make"
-  args:
-    chdir: /tmp/nginx_exporter/src/github.com/nginxinc/nginx-prometheus-exporter/
-  run_once: yes
-  delegate_to: localhost
-  when: result.stat.exists == False
-
-- name: install prometheus exporter
+- name: install nginx exporter
   copy:
-    src: /tmp/nginx_exporter/src/github.com/nginxinc/nginx-prometheus-exporter/nginx-prometheus-exporter
+    src: /tmp/nginx-prometheus-exporter/
     dest: /opt/nginx_exporter
     mode: 0755
 
